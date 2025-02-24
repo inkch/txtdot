@@ -1,6 +1,4 @@
 import origAxios, { CreateAxiosDefaults } from 'axios';
-import { isLocalResource, isLocalResourceURL } from '../utils/islocal';
-import { LocalResourceError } from '../errors/main';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const config: CreateAxiosDefaults<any> = {
@@ -14,18 +12,8 @@ const config: CreateAxiosDefaults<any> = {
 const axios = origAxios.create(config);
 
 axios.interceptors.response.use(
-  (response) => {
-    if (isLocalResource(response.request.socket.remoteAddress)) {
-      throw new LocalResourceError();
-    }
-
-    return response;
-  },
-  async (error) => {
-    if (await isLocalResourceURL(new URL(error.config?.url))) {
-      throw new LocalResourceError();
-    }
-
+  (response) => response,
+  (error) => {
     throw error;
   }
 );
